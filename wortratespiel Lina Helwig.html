@@ -1,0 +1,178 @@
+
+</html>index.html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wortratespiel</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+
+        main {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        #game-section {
+            text-align: center;
+        }
+
+        #word-display {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        #guess-input {
+            padding: 8px;
+            margin-right: 8px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        #result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #highscore {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Wortratespiel</h1>
+    </header>
+
+    <main>
+        <section id="game-section">
+            <h2>Rate das Wort</h2>
+            <div id="word-display"></div>
+            <p id="guesses-left">Versuche übrig: 6</p>
+            <input type="text" id="guess-input" placeholder="Buchstabe eingeben">
+            <button onclick="checkGuess()">Prüfen</button>
+            <p id="result"></p>
+            <p id="highscore">Highscore: 0</p>
+            <button onclick="restartGame()">Neustart</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Wortratespiel. Lina Helwig.</p>
+    </footer>
+
+    <script>
+        var wordList = ["Elefant", "Giraffe", "Wühlmaus", "Pinguin", "Braunbär"];
+        var word = "";
+        var guessedWord = "";
+        var guessesLeft = 6;
+        var highscore = 0;
+
+        function startGame() {
+            word = wordList[Math.floor(Math.random() * wordList.length)];
+            guessedWord = "_".repeat(word.length);
+            guessesLeft = 6;
+
+            document.getElementById("guesses-left").textContent = "Versuche übrig: " + guessesLeft;
+            document.getElementById("result").textContent = "";
+            document.getElementById("highscore").textContent = "Highscore: " + highscore;
+
+            displayWord();
+        }
+
+        function displayWord() {
+            document.getElementById("word-display").textContent = guessedWord;
+        }
+
+        function checkGuess() {
+            var guessInput = document.getElementById("guess-input").value.toUpperCase();
+
+            if (guessInput.length !== 1 || !/[A-ZÄÖÜ]/.test(guessInput)) {
+                alert("Bitte geben Sie einen einzelnen Buchstaben ein.");
+                return;
+            }
+
+            
+            guessInput = guessInput.toUpperCase();
+
+            if (word.toUpperCase().includes(guessInput)) {
+                var updatedWord = guessedWord.split('');
+
+                for (var i = 0; i < word.length; i++) {
+                    if (word[i].toUpperCase() === guessInput && updatedWord[i] !== guessInput) {
+                        updatedWord[i] = guessInput;
+                    }
+                }
+
+                guessedWord = updatedWord.join('');
+
+                if (guessedWord === word.toUpperCase()) {
+                    document.getElementById("result").textContent = "Gewonnen! Das Wort war " + word + ".";
+                    updateHighscore();
+                    restartGame();
+                    return;
+                }
+            } else {
+                guessesLeft--;
+
+                if (guessesLeft === 0) {
+                    document.getElementById("result").textContent = "Verloren! Das richtige Wort war " + word + ".";
+                    restartGame();
+                    return;
+                }
+            }
+
+            document.getElementById("guess-input").value = "";
+            document.getElementById("guesses-left").textContent = "Versuche übrig: " + guessesLeft;
+            displayWord();
+        }
+
+        function updateHighscore() {
+            highscore++;
+            document.getElementById("highscore").textContent = "Highscore: " + highscore;
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        startGame();
+    </script>
+</body>
